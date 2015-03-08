@@ -112,6 +112,9 @@ cvar_t  *cl_packetloss; //bani
 cvar_t  *cl_packetdelay;    //bani
 extern qboolean sv_cheats;  //bani
 
+// Toggle demo messages like "Stopped demo", "Recording to.." / Zero / 8.3.2015
+cvar_t  *tj_demoMessages;
+
 clientActive_t cl;
 clientConnection_t clc;
 clientStatic_t cls;
@@ -298,7 +301,11 @@ void CL_StopRecord_f( void ) {
 	Cvar_Set( "cl_demorecording", "0" ); // fretn
 	Cvar_Set( "cl_demofilename", "" ); // bani
 	Cvar_Set( "cl_demooffset", "0" ); // bani
-	Com_Printf( "Stopped demo.\n" );
+
+  if (tj_demoMessages->integer)
+  {
+    Com_Printf("Stopped demo.\n");
+  }
 }
 
 /*
@@ -386,6 +393,7 @@ void CL_Record( const char* name ) {
 
 	// open the demo file
 
+  if (!tj_demoMessages->integer)
 	Com_Printf( "recording to %s.\n", name );
 	clc.demofile = FS_FOpenFileWrite( name );
 	if ( !clc.demofile ) {
@@ -3462,6 +3470,9 @@ void CL_Init( void ) {
 	Q_strncpyz( cls.autoupdateServerNames[3], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
 	Q_strncpyz( cls.autoupdateServerNames[4], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
 	// DHM - Nerve
+
+  // Toggle demo messages like "Stopped demo", "Recording to.." / Zero / 8.3.2015
+  tj_demoMessages = Cvar_Get("tj_demoMessages", "0", CVAR_ARCHIVE);
 
 	//
 	// register our commands
